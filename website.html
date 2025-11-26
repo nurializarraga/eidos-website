@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EIDOS</title>
+  <style>
+    @font-face {
+      font-family: 'Newspirit';
+      src: url('Newspirit.woff2') format('woff2');
+    }
+
+    :root{
+      --green: #539677;
+      --yellow: #F4F4C0;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--green);
+      color: var(--yellow);
+      font-family: 'Newspirit', serif;
+      overflow-x: hidden;
+      transition: background 0.45s ease, color 0.45s ease;
+      cursor: none;
+    }
+
+    body.theme-yellow { background-color: var(--yellow); color: var(--green); }
+    body.theme-green { background-color: var(--green); color: var(--yellow); }
+
+    .screen {
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      position: relative;
+      padding: 2rem;
+      box-sizing: border-box;
+      scroll-snap-align: start;
+    }
+
+    #logo {
+      font-family: 'Newspirit', serif;
+      font-size: 4rem;
+      font-weight: 600;
+      letter-spacing: 0.2rem;
+      text-transform: uppercase;
+      transform: scaleY(2.81);
+      display: inline-block;
+      line-height: 1;
+    }
+    #logo span { text-transform: lowercase; }
+
+    .mini-logo {
+      position: fixed;
+      top: 28px;
+      left: 36px;
+      font-family: 'Newspirit', serif;
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: 0.15rem;
+      transform: scaleY(2.81);
+      transform-origin: top;
+      line-height: 1;
+      z-index: 999;
+      display: none;
+      cursor: none;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .menu {
+      display: flex;
+      gap: 2.5rem;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .menu a {
+      text-decoration: none;
+      color: inherit;
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: 0.08rem;
+      text-transform: uppercase;
+      cursor: none;
+      padding: 0.25rem 0.5rem;
+    }
+
+    .content {
+      max-width: 900px;
+      font-size: 1.6rem;
+      line-height: 1.9rem;
+      text-align: center;
+      padding: 0 1rem;
+    }
+
+    /* custom cursor */
+    .custom-cursor {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--cursor-color);
+      border-radius: 3px;
+      position: fixed;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: border-color 0.2s ease, transform 0.08s ease-out;
+      z-index: 9999;
+      background-color: transparent;
+    }
+
+    @media (max-width: 600px) {
+      #logo { font-size: 3rem; transform: scaleY(2.4); }
+      .mini-logo { font-size: 1.6rem; transform: scaleY(2.4); left:18px; top:22px; }
+      .menu a { font-size: 1.6rem; }
+      .content { font-size: 1.15rem; line-height: 1.6rem; }
+    }
+  </style>
+</head>
+<body class="theme-green">
+
+  <!-- Custom cursor -->
+  <div class="custom-cursor"></div>
+
+  <a class="mini-logo" id="miniLogo" href="#menu-screen" aria-label="EiDOS">E<span>i</span>DOS</a>
+
+  <!-- FIRST SCREEN -->
+  <section class="screen" id="first">
+    <div id="logo">E<span>i</span>DOS</div>
+  </section>
+
+  <!-- SECOND SCREEN -->
+  <section class="screen" id="second">
+    <div class="content" style="font-size:1.8rem;">
+      Bringing you the best of Latin American contemporary art.
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="screen" id="about">
+    <div class="content">
+      EiDOS is a Boston-based contemporary art advisory specializing in emerging artists, with a unique emphasis on Latin America. 
+      The firm serves new and established collectors seeking culturally rich, conceptually engaged works. 
+      Through personalized guidance and market insights, the advisory helps clients build meaningful, long-term collections 
+      while expanding exposure for underrepresented voices.
+    </div>
+  </section>
+
+  <!-- INQUIRIES -->
+  <section class="screen" id="inquiries">
+    <div class="content" style="font-size:2rem;">
+      Inquiries: <a href="mailto:nuria@estudio-eidos.com" style="color:inherit;text-decoration:none;">nuria@estudio-eidos.com</a>
+    </div>
+  </section>
+
+  <script>
+    const sections = Array.from(document.querySelectorAll('.screen'));
+    const miniLogo = document.getElementById('miniLogo');
+    const cursor = document.querySelector('.custom-cursor');
+    const body = document.body;
+
+    let step = 0;
+
+    // Cursor color mapping for contrast
+    const cursorColors = {
+      green: 'var(--yellow)', // green bg → yellow border
+      yellow: 'var(--green)'  // yellow bg → green border
+    };
+
+    const updateCursorColor = () => {
+      const theme = body.classList.contains('theme-yellow') ? 'yellow' : 'green';
+      // Update cursor
+      cursor.style.borderColor = cursorColors[theme];
+      // Update mini-logo
+      miniLogo.style.color = cursorColors[theme];
+    };
+
+    // Click anywhere to advance
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('a')) return;
+      step++;
+      if (step < sections.length) {
+        const target = sections[step];
+        window.scrollTo({ top: target.offsetTop, behavior: 'smooth' });
+      }
+    });
+
+    // Anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', function(evt){
+        evt.preventDefault();
+        evt.stopPropagation();
+        const id = this.getAttribute('href').slice(1);
+        const el = document.getElementById(id);
+        if (el) window.scrollTo({ top: el.offsetTop, behavior: 'smooth' });
+      });
+    });
+
+    // IntersectionObserver for theme & mini logo
+    const observerOptions = { root: null, rootMargin: "0px", threshold: 0.55 };
+    const sectionToTheme = (id) => {
+      if (id === 'second' || id === 'menu-screen' || id === 'inquiries') return 'yellow';
+      if (id === 'about') return 'green';
+      return 'green';
+    };
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const id = entry.target.id;
+        const theme = sectionToTheme(id);
+        if (theme === 'yellow') { body.classList.remove('theme-green'); body.classList.add('theme-yellow'); }
+        else { body.classList.remove('theme-yellow'); body.classList.add('theme-green'); }
+
+        miniLogo.style.display = (id === 'first') ? 'none' : 'block';
+        updateCursorColor();
+      });
+    }, observerOptions);
+
+    sections.forEach(s => io.observe(s));
+
+    // Cursor follows mouse
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = `${e.clientX}px`;
+      cursor.style.top = `${e.clientY}px`;
+    });
+
+    // Load: set initial step & cursor color
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        let activeIndex = 0, maxVisible = 0;
+        sections.forEach((s,i)=>{
+          const rect = s.getBoundingClientRect();
+          const visible = Math.max(0, Math.min(window.innerHeight, rect.bottom) - Math.max(0, rect.top));
+          if (visible>maxVisible){ maxVisible=visible; activeIndex=i; }
+        });
+        window.scrollTo({ top: sections[activeIndex].offsetTop, behavior:'instant' });
+        step = activeIndex;
+        updateCursorColor();
+      },50);
+    });
+  </script>
+
+</body>
+</html>
